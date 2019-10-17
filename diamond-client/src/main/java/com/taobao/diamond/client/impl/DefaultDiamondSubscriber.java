@@ -238,8 +238,11 @@ class DefaultDiamondSubscriber implements DiamondSubscriber {
                     return;
                 }
                 try {
+                    //checkLocalConfigInfo：主要是检查本地数据是否有更新，如果没有则返回，有则返回最新数据，并通知客户端配置的listener。
                     checkLocalConfigInfo();
+                    //checkDiamondServerConfigInfo：远程调用服务端，获取最新修改的配置数据并通知客户端listener。
                     checkDiamondServerConfigInfo();
+                    //checkSnapshot：主要是持久化数据信息用的方法。
                     checkSnapshot();
                 }
                 catch (Exception e) {
@@ -312,6 +315,11 @@ class DefaultDiamondSubscriber implements DiamondSubscriber {
     }
 
 
+    /**
+     * 1、通过HttpClient方式从服务端获取更新过的dataId和groupId集合。
+     * 2、根据dataId和groupId再从服务端将相应变化的数据获取下来。
+     * 3、通知客户端注册的listener程序。
+     */
     private void checkDiamondServerConfigInfo() {
         Set<String> updateDataIdGroupPairs = checkUpdateDataIds(diamondConfigure.getReceiveWaitTime());
         if (null == updateDataIdGroupPairs || updateDataIdGroupPairs.size() == 0) {
@@ -339,6 +347,10 @@ class DefaultDiamondSubscriber implements DiamondSubscriber {
     }
 
 
+    /**
+     * 1、循环本地缓存数据，比较数据是否更新变化，重点看getLocalConfigureInfomation方法
+     * 2、如果有更新数据则调用popConfigInfo方法通知客户端listener
+     */
     private void checkLocalConfigInfo() {
         for (Entry<String/* dataId */, ConcurrentHashMap<String/* group */, CacheData>> cacheDatasEntry : cache
             .entrySet()) {
@@ -354,6 +366,7 @@ class DefaultDiamondSubscriber implements DiamondSubscriber {
                         if (log.isInfoEnabled()) {
                             log.info("本地配置信息被读取, dataId:" + cacheData.getDataId() + ", group:" + cacheData.getGroup());
                         }
+                        // 将已经更新的数据通知给客户端织入的listener程序，使能够达到最新数据通知给客户端
                         popConfigInfo(cacheData, configInfo);
                         continue;
                     }

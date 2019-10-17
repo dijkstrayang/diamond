@@ -45,11 +45,17 @@ public class LocalConfigInfoProcessor {
     /**
      * 获取本地配置
      * 
-     * @param cacheData
-     * @param force
-     *            强制获取，在没有变更的时候不返回null
+     * @param cacheData 缓存数据
+     * @param force 强制获取，在没有变更的时候不返回null
      * @return
      * @throws IOException
+     */
+    /**
+     * 这段代码很关键，判断当前缓存的数据是否与持久化的文件数据是否一致，包括版本号，文件路径等信息，如果服务器端有配置数据更新，客户端则拿到最新的数据后更新本地文件内容
+     * 情况1：existFiles(Map<String,Long>)无对应路径，返回null
+     * 情况2：force=true 强制从本地获取，返回本地的content
+     * 情况3：文件路径相同且版本号相同，log本地配置无变化，返回null
+     * 情况4：log本地配置数据变化，返回本地content
      */
     public String getLocalConfigureInfomation(CacheData cacheData, boolean force) throws IOException {
         String filePath = getFilePath(cacheData.getDataId(), cacheData.getGroup());
@@ -95,6 +101,12 @@ public class LocalConfigInfoProcessor {
     }
 
 
+    /**
+     * 文件路径
+     * @param dataId
+     * @param group
+     * @return
+     */
     String getFilePath(String dataId, String group) {
         StringBuilder filePathBuilder = new StringBuilder();
         filePathBuilder.append(rootPath).append("/").append(Constants.BASE_DIR).append("/").append(group).append("/")
