@@ -92,6 +92,7 @@ class DefaultDiamondSubscriber implements DiamondSubscriber {
     }
     private final Log dataLog = LogFactory.getLog(LoggerInit.LOG_NAME_CONFIG_DATA);
 
+    // ÎªÊ²Ã´keyÊÇdataId£¿£¿
     private final ConcurrentHashMap<String/* DataID */, ConcurrentHashMap<String/* Group */, CacheData>> cache =
             new ConcurrentHashMap<String, ConcurrentHashMap<String, CacheData>>();
 

@@ -22,8 +22,10 @@ public class CacheData {
     private volatile String lastModifiedHeader = Constants.NULL;
     private volatile String md5 = Constants.NULL;
     private AtomicInteger domainNamePos = new AtomicInteger(0);
+    // 本地缓存文件路径
     private volatile String localConfigInfoFile = null;
     private volatile long localConfigInfoVersion;
+    // todo 这个字段什么含义
     private volatile boolean useLocalConfigInfo = false;
     /**
      * 统计成功获取配置信息的次数
